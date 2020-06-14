@@ -27,15 +27,6 @@ def submit_form():
         return "Something went wrong. Try again!"
 
 
-def write_to_txt(data):
-    with open('database.txt', 'a+') as txt_db:
-        name = data['name']
-        email = data['email']
-        subject = data['subject']
-        message = data['message']
-        txt_db.write(f"\n{name}, {email}: {subject}, {message}")
-
-
 def write_to_csv(data):
     with open('database.csv', mode='a+', newline='') as csv_db:
         name = data['name']
