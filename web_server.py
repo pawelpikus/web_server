@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request
+import csv
 
 app = Flask(__name__)
 
@@ -16,18 +17,30 @@ def html_page(page_name):
 @app.route('/submit_form', methods=['POST', 'GET'])
 def submit_form():
     if request.method == 'POST':
-        name = request.form.get('name')
-        data = request.form
-        write_to_db(data)
-        return render_template('thank_you.html', value=name)
+        try:
+            data = request.form
+            write_to_csv(data)
+            return render_template('thank_you.html', value=data['name'])
+        except IOError:
+            return "Error. Didn't save to database."
     else:
         return "Something went wrong. Try again!"
 
 
-def write_to_db(data):
-    with open('database.txt', 'a+') as db:
+def write_to_txt(data):
+    with open('database.txt', 'a+') as txt_db:
         name = data['name']
         email = data['email']
         subject = data['subject']
         message = data['message']
-        db.write(f"\n{name}, {email}: {subject}, {message}")
+        txt_db.write(f"\n{name}, {email}: {subject}, {message}")
+
+
+def write_to_csv(data):
+    with open('database.csv', mode='a+', newline='') as csv_db:
+        name = data['name']
+        email = data['email']
+        subject = data['subject']
+        message = data['message']
+        csv_writer = csv.writer(csv_db, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+        csv_writer.writerow([name, email, subject, message])
